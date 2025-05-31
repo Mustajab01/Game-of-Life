@@ -1,0 +1,66 @@
+.cell {
+	width: clamp(8px, 2vw, 16px);
+	height: clamp(8px, 2vw, 16px);
+	border-radius: 2px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	position: relative;
+}
+
+.cell.dead {
+	background: rgba(51, 65, 85, 0.4);
+	border: 1px solid rgba(71, 85, 105, 0.3);
+}
+
+.cell.alive {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border: 1px solid #8b5cf6;
+	box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+	transform: scale(1.1);
+}
+
+.cell:hover {
+	transform: scale(1.2);
+	z-index: 1;
+}
+
+.cell.dead:hover {
+	background: rgba(71, 85, 105, 0.6);
+	border-color: rgba(100, 116, 139, 0.5);
+}
+
+.cell.alive:hover {
+	box-shadow: 0 0 12px rgba(102, 126, 234, 0.6);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+	.cell {
+		width: clamp(6px, 3vw, 12px);
+		height: clamp(6px, 3vw, 12px);
+	}
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+	.cell {
+		width: clamp(4px, 4vw, 10px);
+		height: clamp(4px, 4vw, 10px);
+	}
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+	.cell {
+		min-width: 12px;
+		min-height: 12px;
+	}
+
+	.cell:hover {
+		transform: none;
+	}
+
+	.cell:active {
+		transform: scale(1.2);
+	}
+}
