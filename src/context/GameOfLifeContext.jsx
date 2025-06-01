@@ -7,18 +7,44 @@ import React, {
   useCallback,
 } from "react";
 
-const ROWS = 25;
-const COLS = 40;
+// Function to calculate grid dimensions based on screen size
+const getGridDimensions = () => {
+  const width = window.innerWidth;
+
+  // Mobile portrait (width < 480px)
+  if (width < 480) {
+    return { rows: 35, cols: 18 };
+  }
+  // Mobile landscape / small tablet (480px - 768px)
+  else if (width < 768) {
+    return { rows: 25, cols: 30 };
+  }
+  // Tablet (768px - 1024px)
+  else if (width < 1024) {
+    return { rows: 28, cols: 35 };
+  }
+  // Desktop small (1024px - 1440px)
+  else if (width < 1440) {
+    return { rows: 25, cols: 40 };
+  }
+  // Desktop large (1440px+)
+  else {
+    return { rows: 30, cols: 50 };
+  }
+};
+
+// Initial grid dimensions
+let gridDimensions = getGridDimensions();
 
 // Using a Set to store only the "alive" cells
 // This significantly reduces the data size and iteration time for sparse grids
 const createEmptyGrid = () => new Set();
 
 // Generate random alive cells and store them in a Set
-const createRandomGrid = () => {
+const createRandomGrid = (rows, cols) => {
   const aliveCells = new Set();
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
       if (Math.random() > 0.7) {
         aliveCells.add(`${r}-${c}`);
       }
@@ -35,6 +61,8 @@ let sharedState = {
   intervalId: null,
   generation: 0,
   speed: 200,
+  rows: gridDimensions.rows,
+  cols: gridDimensions.cols,
 };
 
 let listeners = [];
@@ -65,6 +93,49 @@ export const GameOfLifeProvider = ({ children }) => {
     gridRef.current = sharedState.grid;
   });
 
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const newDimensions = getGridDimensions();
+
+      // Only update if dimensions actually changed
+      if (newDimensions.rows !== sharedState.rows || newDimensions.cols !== sharedState.cols) {
+        // Stop the game if running
+        if (sharedState.isRunning) {
+          sharedState.isRunning = false;
+          if (sharedState.intervalId) {
+            clearInterval(sharedState.intervalId);
+            sharedState.intervalId = null;
+          }
+        }
+
+        // Update dimensions
+        sharedState.rows = newDimensions.rows;
+        sharedState.cols = newDimensions.cols;
+
+        // Clear the grid and reset generation for the new dimensions
+        sharedState.grid = createEmptyGrid();
+        sharedState.generation = 0;
+        gridRef.current = sharedState.grid;
+
+        notifyListeners();
+      }
+    };
+
+    // Debounce resize events
+    let resizeTimeout;
+    const debouncedResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 150);
+    };
+
+    window.addEventListener('resize', debouncedResize);
+    return () => {
+      window.removeEventListener('resize', debouncedResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, []);
+
   const getNeighborCoordinates = useCallback((x, y) => {
     const neighbors = [];
     for (let i = -1; i <= 1; i++) {
@@ -72,7 +143,7 @@ export const GameOfLifeProvider = ({ children }) => {
         if (i === 0 && j === 0) continue;
         const newX = x + i;
         const newY = y + j;
-        if (newX >= 0 && newX < ROWS && newY >= 0 && newY < COLS) {
+        if (newX >= 0 && newX < sharedState.rows && newY >= 0 && newY < sharedState.cols) {
           neighbors.push(`${newX}-${newY}`);
         }
       }
@@ -163,7 +234,7 @@ export const GameOfLifeProvider = ({ children }) => {
 
   const randomizeGrid = useCallback(() => {
     stopGame();
-    sharedState.grid = createRandomGrid();
+    sharedState.grid = createRandomGrid(sharedState.rows, sharedState.cols);
     sharedState.generation = 0;
     gridRef.current = sharedState.grid;
     notifyListeners();
@@ -212,8 +283,8 @@ export const GameOfLifeProvider = ({ children }) => {
     toggleCell,
     handleStartStop,
     setSpeed,
-    gridRows: ROWS,
-    gridCols: COLS,
+    gridRows: sharedState.rows,
+    gridCols: sharedState.cols,
   };
 
   return (

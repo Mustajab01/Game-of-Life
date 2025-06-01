@@ -145,6 +145,7 @@ src
 - **Controlled Animation**: Uses setInterval with a configurable speed (default 200ms) for smooth animation, preventing browser overload.
 
 #### 🎨 Responsive Design & Styling
+- **Variable Grid Rows and Columns**: Grid rows and columns are based on user device.
 - **CSS Grid**: Grid.jsx uses CSS Grid for a flexible and responsive layout of cells.
 
 - **Modular Styles**: Each component has its own CSS file for organized and maintainable styling.
