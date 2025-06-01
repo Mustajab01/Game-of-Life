@@ -50,7 +50,7 @@ Unleash cellular chaos in one of two ways:
 
 ### 🧪 Option 1: Observe the Simulation in the Wild
 
-[🔬 Launch the Live Petri Dish](https://Mustajab01.github.io/game-of-life) – No setup, no mess. Just life... evolving before your eyes.
+[🔬 Launch the Live Petri Dish](https://Mustajab01.github.io/Game-of-Life) – No setup, no mess. Just life... evolving before your eyes.
 
 ### ⚙️ Option 2: Clone and Cultivate Your Own Colony
 
