@@ -45,6 +45,10 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      <div className="footer">
+        <p>Made by <a href="https://github.com/Mustajab01" target="_blank" rel="noopener noreferrer">Mustajab Ali</a></p>
+      </div>
     </div>
 
   );
